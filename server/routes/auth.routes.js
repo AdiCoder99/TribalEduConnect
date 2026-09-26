@@ -6,3 +6,5 @@ const authrouter = express.Router();
 authrouter.post('/register', register);
 authrouter.post('/login', login);
 authrouter.get('/me', protect, me);
+
+export default authrouter;

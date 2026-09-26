@@ -34,6 +34,10 @@ export const submitApplication = async (req, res) => {
       return res.status(400).json({ success: false, error: 'You have already submitted an application for this scheme.' });
     }
 
+    // Extract S3 Document URLs provided by multer-s3
+    const casteDocUrl = req.files?.casteDoc ? req.files.casteDoc[0].location : '';
+    const incomeDocUrl = req.files?.incomeDoc ? req.files.incomeDoc[0].location : '';
+
     // Baseline AI Scrutiny Object
     let aiData = {
       extractedName: applicantData.name || req.user.name,
@@ -44,12 +48,17 @@ export const submitApplication = async (req, res) => {
       isTamperSuspected: false
     };
 
-    // Forward income certificate to Python OCR Service if uploaded
-    if (req.files?.incomeDoc && req.files.incomeDoc[0]) {
+    // Forward income certificate from S3 URL to Python OCR Service if uploaded
+    if (incomeDocUrl) {
       try {
-        const filePath = req.files.incomeDoc[0].path;
+        // Fetch document buffer from AWS S3
+        const imageResponse = await axios.get(incomeDocUrl, { responseType: 'arraybuffer' });
+
         const formData = new FormData();
-        formData.append('file', fs.createReadStream(filePath));
+        formData.append('file', Buffer.from(imageResponse.data), {
+          filename: req.files.incomeDoc[0].originalname,
+          contentType: req.files.incomeDoc[0].mimetype,
+        });
 
         const ocrResponse = await axios.post('http://localhost:8000/api/ocr/verify-document', formData, {
           headers: formData.getHeaders()
@@ -70,7 +79,7 @@ export const submitApplication = async (req, res) => {
     // Run AI Rule Engine Evaluation against Scheme Limits
     const evaluation = evaluateEligibility(applicantData, aiData, scheme);
 
-    // Save full application document to MongoDB
+    // Save full application document to MongoDB with S3 URLs
     const application = await Application.create({
       user: req.user._id,
       scheme: scheme._id,
@@ -89,8 +98,8 @@ export const submitApplication = async (req, res) => {
         ifscCode: bankDetails?.ifscCode || ''
       },
       documents: {
-        casteCertificateUrl: req.files?.casteDoc ? req.files.casteDoc[0].path : '',
-        incomeCertificateUrl: req.files?.incomeDoc ? req.files.incomeDoc[0].path : ''
+        casteCertificateUrl: casteDocUrl,
+        incomeCertificateUrl: incomeDocUrl
       },
       aiScrutiny: aiData,
       status: evaluation.status,

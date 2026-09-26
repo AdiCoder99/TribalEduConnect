@@ -2,41 +2,44 @@ import mongoose from 'mongoose';
 
 const applicationSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    scheme: { type: mongoose.Schema.Types.ObjectId, ref: 'Scheme', required: true },
-    applicant: {
-      name: { type: String, required: true },
-      email: { type: String, required: true },
-      phone: { type: String, required: true },
-      stCertificateNo: { type: String, required: true },
-      annualIncome: { type: Number, required: true },
-      academicScore: { type: Number, required: true },
-      state: { type: String, required: true },
-      university: { type: String, required: true }
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
+    scheme: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Scheme',
+      required: true,
+    },
+    applicant: {
+      fullName: { type: String, required: true },
+      dob: { type: String, required: true },
+      annualIncome: { type: Number, required: true },
+      category: { type: String, required: true },
+    },
+    // AWS S3 Document Links stored here
     documents: {
-      casteCertificateUrl: { type: String, default: 'sample_caste.pdf' },
-      incomeCertificateUrl: { type: String, default: 'sample_income.pdf' }
+      casteCertificateUrl: {
+        type: String,
+        required: true, // https://tribaleduconnect-documents.s3.eu-north-1.amazonaws.com/documents/casteDoc-171234.png
+      },
+      incomeCertificateUrl: {
+        type: String,
+        required: true, // https://tribaleduconnect-documents.s3.eu-north-1.amazonaws.com/documents/incomeDoc-171234.png
+      },
     },
     aiScrutiny: {
-      extractedName: String,
       extractedIncome: Number,
-      extractedCasteCategory: String,
-      confidenceScore: { type: Number, default: 0 },
-      isTamperSuspected: { type: Boolean, default: false }
+      isStVerified: Boolean,
+      isScDetected: Boolean,
+      confidenceScore: Number,
     },
     status: {
       type: String,
-      enum: ['SUBMITTED', 'AUTO_VERIFIED', 'DEFICIENT', 'MANUAL_REVIEW', 'APPROVED', 'REJECTED'],
-      default: 'SUBMITTED'
+      enum: ['Submitted', 'Under Review', 'Approved', 'Flagged'],
+      default: 'Submitted',
     },
-    deficiencyNotes: [
-      {
-        field: String,
-        reason: String,
-        flaggedAt: { type: Date, default: Date.now }
-      }
-    ]
   },
   { timestamps: true }
 );

@@ -12,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+dotenv.config();
 // Connect to the database
 connectDB();
 
@@ -19,7 +20,9 @@ app.get('/', (req, res) => {
     res.send('Server is running !');
 })
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authrouter);
+app.use('/api/applications', applicationRoutes);
 
 
 const PORT = process.env.PORT || 5000;
