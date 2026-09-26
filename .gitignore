@@ -1,0 +1,44 @@
+# =========================
+# Python
+# =========================
+
+# Virtual environment
+ai_service/venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+.env.*
+
+# =========================
+# Node.js
+# =========================
+
+# Dependencies
+server/node_modules/
+
+# Environment variables
+server/.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# =========================
+# IDE
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+# OS
+# =========================
+
+.DS_Store
+Thumbs.db
