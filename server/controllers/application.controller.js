@@ -1,14 +1,26 @@
 import Application from '../models/Application.js';
 import Scheme from '../models/Scheme.js';
 import { evaluateEligibility } from '../services/ruleEngine.js';
+import axios from 'axios';
+import FormData from 'form-data';
+import fs from 'fs';
 
 /**
  * 1. SUBMIT NEW APPLICATION
- * Handles multi-step form data, document references, and triggers AI Rule Engine evaluation.
+ * Handles multi-step form data, forwards uploaded files to Python OCR, and triggers AI Rule Engine.
  */
 export const submitApplication = async (req, res) => {
   try {
-    const { schemeId, applicantData, bankDetails } = req.body;
+    // Parse nested object fields if sent via multipart/form-data
+    const applicantData = typeof req.body.applicantData === 'string'
+      ? JSON.parse(req.body.applicantData)
+      : req.body.applicantData || {};
+
+    const bankDetails = typeof req.body.bankDetails === 'string'
+      ? JSON.parse(req.body.bankDetails)
+      : req.body.bankDetails || {};
+
+    const { schemeId } = req.body;
 
     // Validate scheme existence
     const scheme = await Scheme.findById(schemeId);
@@ -16,21 +28,44 @@ export const submitApplication = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Selected scheme not found.' });
     }
 
-    // Check if student already applied for this active scheme
+    // Check for existing application
     const existingApp = await Application.findOne({ user: req.user._id, scheme: schemeId });
     if (existingApp) {
       return res.status(400).json({ success: false, error: 'You have already submitted an application for this scheme.' });
     }
 
-    // Default/Extracted AI Scrutiny payload
-    // (This gets enriched when integrated with the Python FastAPI OCR microservice)
-    const aiData = {
+    // Baseline AI Scrutiny Object
+    let aiData = {
       extractedName: applicantData.name || req.user.name,
       extractedIncome: applicantData.annualIncome,
-      extractedCasteCategory: 'Scheduled Tribe',
-      confidenceScore: 90,
+      isStVerified: false,
+      isScDetected: false,
+      confidenceScore: 50,
       isTamperSuspected: false
     };
+
+    // Forward income certificate to Python OCR Service if uploaded
+    if (req.files?.incomeDoc && req.files.incomeDoc[0]) {
+      try {
+        const filePath = req.files.incomeDoc[0].path;
+        const formData = new FormData();
+        formData.append('file', fs.createReadStream(filePath));
+
+        const ocrResponse = await axios.post('http://localhost:8000/api/ocr/verify-document', formData, {
+          headers: formData.getHeaders()
+        });
+
+        if (ocrResponse.data?.success) {
+          const parsed = ocrResponse.data.data;
+          aiData.extractedIncome = parsed.extracted_income;
+          aiData.isStVerified = parsed.is_st_verified;
+          aiData.isScDetected = parsed.is_sc_detected;
+          aiData.confidenceScore = parsed.confidence_score;
+        }
+      } catch (ocrError) {
+        console.warn('⚠️ FastAPI OCR microservice unreachable. Proceeding with default values:', ocrError.message);
+      }
+    }
 
     // Run AI Rule Engine Evaluation against Scheme Limits
     const evaluation = evaluateEligibility(applicantData, aiData, scheme);
@@ -54,8 +89,8 @@ export const submitApplication = async (req, res) => {
         ifscCode: bankDetails?.ifscCode || ''
       },
       documents: {
-        casteCertificateUrl: req.files?.casteDoc ? req.files.casteDoc[0].path : 'sample_caste.pdf',
-        incomeCertificateUrl: req.files?.incomeDoc ? req.files.incomeDoc[0].path : 'sample_income.pdf'
+        casteCertificateUrl: req.files?.casteDoc ? req.files.casteDoc[0].path : '',
+        incomeCertificateUrl: req.files?.incomeDoc ? req.files.incomeDoc[0].path : ''
       },
       aiScrutiny: aiData,
       status: evaluation.status,
@@ -74,7 +109,6 @@ export const submitApplication = async (req, res) => {
 
 /**
  * 2. GET STUDENT'S OWN APPLICATIONS
- * Fetches applications belonging to the logged-in student.
  */
 export const getMyApplications = async (req, res) => {
   try {
@@ -90,7 +124,6 @@ export const getMyApplications = async (req, res) => {
 
 /**
  * 3. GET SINGLE APPLICATION DETAILS & TIMELINE
- * Fetches complete application details for viewing status or tracking.
  */
 export const getApplicationById = async (req, res) => {
   try {
@@ -99,7 +132,6 @@ export const getApplicationById = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Application not found.' });
     }
 
-    // Ensure students can only access their own applications
     if (req.user.role === 'STUDENT' && application.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, error: 'Unauthorized access to this application.' });
     }
@@ -112,7 +144,6 @@ export const getApplicationById = async (req, res) => {
 
 /**
  * 4. RESUBMIT DEFICIENT APPLICATION (Student Only)
- * Allows a student to correct flagged income/academic fields or re-upload documents.
  */
 export const resubmitApplication = async (req, res) => {
   try {
@@ -132,24 +163,43 @@ export const resubmitApplication = async (req, res) => {
       });
     }
 
-    const { applicantData } = req.body;
+    const applicantData = typeof req.body.applicantData === 'string'
+      ? JSON.parse(req.body.applicantData)
+      : req.body.applicantData || {};
 
-    // Update modified fields if provided
     if (applicantData?.annualIncome) application.applicant.annualIncome = applicantData.annualIncome;
     if (applicantData?.academicScore) application.applicant.academicScore = applicantData.academicScore;
 
-    // Update documents if re-uploaded
-    if (req.files?.incomeDoc) {
-      application.documents.incomeCertificateUrl = req.files.incomeDoc[0].path;
+    // Handle document re-upload & re-verify via Python service
+    if (req.files?.incomeDoc && req.files.incomeDoc[0]) {
+      const filePath = req.files.incomeDoc[0].path;
+      application.documents.incomeCertificateUrl = filePath;
+
+      try {
+        const formData = new FormData();
+        formData.append('file', fs.createReadStream(filePath));
+
+        const ocrResponse = await axios.post('http://localhost:8000/api/ocr/verify-document', formData, {
+          headers: formData.getHeaders()
+        });
+
+        if (ocrResponse.data?.success) {
+          const parsed = ocrResponse.data.data;
+          application.aiScrutiny.extractedIncome = parsed.extracted_income;
+          application.aiScrutiny.isStVerified = parsed.is_st_verified;
+          application.aiScrutiny.isScDetected = parsed.is_sc_detected;
+          application.aiScrutiny.confidenceScore = parsed.confidence_score;
+        }
+      } catch (ocrError) {
+        console.warn('⚠️ OCR re-verification failed:', ocrError.message);
+      }
     }
 
-    // Change status from DEFICIENT back to MANUAL_REVIEW for re-scrutiny
     application.status = 'MANUAL_REVIEW';
     
-    // Add audit note
     application.deficiencyNotes.push({
       field: 'SYSTEM_AUDIT',
-      reason: 'Student corrected flagged fields and resubmitted application.',
+      reason: 'Student corrected flagged fields and resubmitted application for review.',
       flaggedAt: new Date()
     });
 
@@ -167,7 +217,6 @@ export const resubmitApplication = async (req, res) => {
 
 /**
  * 5. GET SCRUTINY QUEUE (Scrutinizer & Super Admin)
- * Filterable application list for verification officers.
  */
 export const getScrutinyQueue = async (req, res) => {
   try {
@@ -191,7 +240,6 @@ export const getScrutinyQueue = async (req, res) => {
 
 /**
  * 6. UPDATE APPLICATION STATUS / FLAG DEFICIENCY (Scrutinizer Only)
- * Official action: APPROVE, REJECT, or flag specific DEFICIENT fields.
  */
 export const updateApplicationStatus = async (req, res) => {
   const { status, deficiencyNotes } = req.body;
@@ -208,7 +256,6 @@ export const updateApplicationStatus = async (req, res) => {
 
     application.status = status;
 
-    // Append any new deficiency flags raised by the scrutinizer
     if (deficiencyNotes && Array.isArray(deficiencyNotes)) {
       deficiencyNotes.forEach(note => {
         application.deficiencyNotes.push({
@@ -223,7 +270,7 @@ export const updateApplicationStatus = async (req, res) => {
 
     res.json({
       success: true,
-      message: `Application marked as ${status}.`,
+      message: `Application status updated to ${status}.`,
       data: savedApp
     });
   } catch (error) {
