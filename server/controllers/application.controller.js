@@ -250,7 +250,7 @@ export const getScrutinyQueue = async (req, res) => {
 /**
  * 6. UPDATE APPLICATION STATUS / FLAG DEFICIENCY (Scrutinizer Only)
  */
-export const updateApplicationStatus = async (req, res) => {
+export const reviewApplication = async (req, res) => {
   const { status, deficiencyNotes } = req.body;
   try {
     const validStatuses = ['APPROVED', 'REJECTED', 'DEFICIENT', 'MANUAL_REVIEW'];

@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Helper to generate JWT Token
 const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET || 'mota_sih_hackathon_super_secret_key_2026', {
+  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: '7d'
   });
 };
@@ -16,6 +16,7 @@ const generateToken = (id, role) => {
 export const register = async (req, res) => {
   const { name, email, password, phone, stCertificateNo, state } = req.body;
 
+  const userRole = 'STUDENT'; // Locking role to STUDENT for registration
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -27,7 +28,7 @@ export const register = async (req, res) => {
       email,
       password,
       phone,
-      role: 'STUDENT',
+      role: userRole,
       stCertificateNo,
       state
     });
@@ -54,6 +55,7 @@ export const register = async (req, res) => {
 // 2. LOGIN USER
 export const login = async (req, res) => {
   const { email, role, password } = req.body;
+  console.log('Login attempt:', { email, role, password });
 
   try {
     if (!email || !password || !role) {

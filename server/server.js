@@ -2,6 +2,10 @@ import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
 import connectDB from './configs/db.js';
+import dotenv from 'dotenv';
+import path from 'path';
+import authrouter from './routes/auth.routes.js';
+import applicationRoutes from './routes/application.Routes.js';
 
 
 const app = express();
@@ -20,7 +24,7 @@ app.get('/', (req, res) => {
     res.send('Server is running !');
 })
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authrouter);
 app.use('/api/applications', applicationRoutes);
 
