@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useApp } from '../Context/AppContext';
+import { useApp } from '../../Context/AppContext';
 import { UserPlus } from 'lucide-react';
 
 const Register = () => {

@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import authrouter from './routes/auth.routes.js';
 import applicationRoutes from './routes/application.Routes.js';
+import schemeRoutes from './routes/scheme.routes.js';
 
 
 const app = express();
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authrouter);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/schemes', schemeRoutes);
 
 
 const PORT = process.env.PORT || 5000;

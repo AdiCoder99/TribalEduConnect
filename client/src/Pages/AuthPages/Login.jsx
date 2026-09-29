@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useApp } from '../Context/AppContext';
+import { useApp } from '../../Context/AppContext';
 import { LogIn, Shield, UserCheck } from 'lucide-react';
 
 const Login = () => {
@@ -17,7 +17,11 @@ const Login = () => {
 
   try {
     const res = await login(formData);
-    
+    if(!res.success) {
+      setError(res.error);
+      setSubmitting(false);
+      return;
+    }
     // Extract user role safely (handles both uppercase and lowercase DB values)
     const userRole = (res?.user?.role || res?.data?.user?.role || '').toUpperCase();
 

@@ -2,42 +2,65 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 
-import Login from './Pages/Login';
-import Register from './Pages/Register';
-import StudentDashboard from './Pages/StudentDashboard';
+import Login from '../src/Pages/AuthPages/Login';
+import Register from '../src/Pages/AuthPages/Register';
+import StudentDashboard from './Pages/Dashboards/StudentDashboard';
 import ApplyScheme from './Pages/ApplyScheme';
+import SchemesPage from './Pages/SchemesPage';
+import DashboardLayout from './Layouts/DashboardLayout';
+import OfficerDashboard from './Pages/Dashboards/OfficerDashboard';
+import OfficerLayout from './Layouts/OfficerLayout';
+import ProfileSetup from './Pages/ProfileSetup';
 
-const OfficerDashboard = () => <div className="p-8 text-xl font-bold text-slate-800">Officer Dashboard</div>;
+
 
 function App() {
+
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route
-        path="/student/dashboard"
-        element={
-          <StudentDashboard />
-        }
-      />
-      <Route
-        path="/student/apply/:schemeId"
-        element={
-          <ProtectedRoute allowedRole="Student">
-            <ApplyScheme />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/officer/dashboard"
-        element={
-          <ProtectedRoute allowedRole="Officer">
-            <OfficerDashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        <Route
+          path="/student/profile/setup"
+          element={
+            <ProtectedRoute allowedRoles="STUDENT">
+              <ProfileSetup /> {/* Clean full-screen step layout without Dashboard Sidebar */}
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Dashboard Layout Group */}
+        <Route path="/student" element={<ProtectedRoute allowedRoles="STUDENT">
+          <DashboardLayout />
+        </ProtectedRoute>}>
+          <Route path="dashboard" element={<StudentDashboard />} />
+          <Route path="schemes" element={<SchemesPage />} />
+          <Route path="apply" element={<ApplyScheme />} />
+          {/* Add future routes seamlessly here */}
+          {/* <Route path="applications" element={<MyApplicationsPage />} /> */}
+          {/* <Route path="documents" element={<MyDocumentsPage />} /> */}
+        </Route>
+        <Route
+          path="/student/apply/:schemeId"
+          element={
+            <ProtectedRoute allowedRole="Student">
+              <ApplyScheme />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/officer" element={<ProtectedRoute allowedRole="['OFFICER', 'SCRUTINIZER']">
+          <OfficerLayout />
+        </ProtectedRoute>}>
+          <Route path="dashboard" element={<OfficerDashboard />} />
+          {/* Add future routes for officer here */}
+        </Route>
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </>
   );
 }
 

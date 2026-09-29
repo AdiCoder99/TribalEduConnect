@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import API from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 
 const AppContext = createContext();
@@ -9,6 +10,8 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [authLoading, setAuthLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   // 2. Data Collections
   const [applications, setApplications] = useState([]);
@@ -27,23 +30,35 @@ export const AppProvider = ({ children }) => {
 
   // Sync token header and verify profile on initial mount
   useEffect(() => {
-    const initAuth = async () => {
-      const storedToken = localStorage.getItem('token');
-      if (storedToken) {
-        API.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-        try {
-          const res = await API.get('/auth/me');
-          setUser(res.data?.user || res.data);
-        } catch (error) {
-          console.error('Failed to restore session:', error);
-          logout();
-        }
-      }
-      setAuthLoading(false);
-    };
 
-    initAuth();
-  }, []);
+  const initAuth = async () => {
+
+    setLoading(true);
+
+    const storedToken = localStorage.getItem('token');
+
+    if (storedToken) {
+      API.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+
+      try {
+        const res = await API.get('/auth/me');
+
+setUser(res.data?.user || res.data);
+
+        setUser(res.data?.user || res.data);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    setAuthLoading(false);
+  };
+
+  initAuth();
+}, []);
 
   // --- AUTH ACTIONS ---
   const login = async (credentials) => {
@@ -51,6 +66,7 @@ export const AppProvider = ({ children }) => {
     try {
       const res = await API.post('/auth/login', credentials);
       const { token: newToken, user: userData } = res.data;
+      console.log('Login successful:', userData);
 
       localStorage.setItem('token', newToken);
       API.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
@@ -74,8 +90,10 @@ export const AppProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     setApplications([]);
+    setSchemes([]);
     setNotifications([]);
     showToast('Logged out successfully', 'info');
+    navigate('/login', { replace: true });
   };
 
   // --- APPLICATION DATA ACTIONS ---
