@@ -19,7 +19,14 @@ app.use(express.urlencoded({ extended: true }));
 
 dotenv.config();
 // Connect to the database
-await connectDB();
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    return res.status(500).json({ error: 'Database connection failed', details: err.message });
+  }
+});
 
 app.get('/', (req, res) => {
     res.send('Server is running !');
