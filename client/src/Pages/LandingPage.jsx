@@ -13,6 +13,8 @@ import {
   Lock,
 } from 'lucide-react';
 
+import logo from '../assets/assets.js';
+
 /*
   Design tokens
   Palette is taken from Gond folk art: peacock teal, marigold, berry, on a cool off-white.
@@ -194,14 +196,7 @@ const LandingPage = () => {
       <header className="bg-white sticky top-0 z-50" style={{ borderBottom: '1px solid var(--line)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-6">
           <button onClick={() => navigate('/')} className="flex items-center gap-3 text-left">
-            <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
-              <rect width="44" height="44" rx="8" fill="#0E4D52" />
-              <circle cx="22" cy="22" r="8" fill="#F2B01E" />
-              {Array.from({ length: 12 }).map((_, i) => {
-                const a = (i / 12) * Math.PI * 2;
-                return <circle key={i} cx={22 + Math.cos(a) * 14.5} cy={22 + Math.sin(a) * 14.5} r="1.6" fill="#F2B01E" />;
-              })}
-            </svg>
+            <img src={logo.icon} alt="TribalEduConnect" className="w-16" />
             <span>
               <span className="display block text-xl font-bold leading-tight" style={{ color: 'var(--teal)' }}>
                 TribalEduConnect
