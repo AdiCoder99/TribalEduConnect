@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 dotenv.config();
 // Connect to the database
-connectDB();
+await connectDB();
 
 app.get('/', (req, res) => {
     res.send('Server is running !');
