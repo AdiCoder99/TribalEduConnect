@@ -291,7 +291,7 @@ const StudentDashboard = () => {
               ))}
             </div>
 
-            <button className="w-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold py-2 rounded-xs transition shadow-2xs uppercase tracking-wider" onClick={manageProfile()}>
+            <button className="w-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold py-2 rounded-xs transition shadow-2xs uppercase tracking-wider" onClick={manageProfile}>
               Manage Profile & Vault →
             </button>
           </div>

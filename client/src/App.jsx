@@ -11,6 +11,7 @@ import DashboardLayout from './Layouts/DashboardLayout';
 import OfficerDashboard from './Pages/Dashboards/OfficerDashboard';
 import OfficerLayout from './Layouts/OfficerLayout';
 import ProfileSetup from './Pages/ProfileSetup';
+import LandingPage from './Pages/LandingPage';
 
 
 
@@ -19,6 +20,7 @@ function App() {
   return (
     <>
       <Routes>
+        <Route path='/' element={<LandingPage/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
