@@ -12,7 +12,8 @@ import OfficerDashboard from './Pages/Dashboards/OfficerDashboard';
 import OfficerLayout from './Layouts/OfficerLayout';
 import ProfileSetup from './Pages/ProfileSetup';
 import LandingPage from './Pages/LandingPage';
-
+import MyApplications from './Pages/MyApplications';
+import MyDocuments from './Pages/MyDocuments';
 
 
 function App() {
@@ -40,9 +41,9 @@ function App() {
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="schemes" element={<SchemesPage />} />
           <Route path="apply" element={<ApplyScheme />} />
+          <Route path="applications" element={<MyApplications />} />
+          <Route path="documents" element={<MyDocuments />} />
           {/* Add future routes seamlessly here */}
-          {/* <Route path="applications" element={<MyApplicationsPage />} /> */}
-          {/* <Route path="documents" element={<MyDocumentsPage />} /> */}
         </Route>
         <Route
           path="/student/apply/:schemeId"

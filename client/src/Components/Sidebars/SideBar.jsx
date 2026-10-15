@@ -14,7 +14,7 @@ import {
   Building2
 } from 'lucide-react';
 import { useApp } from '../../Context/AppContext';
-
+import logo from '../../assets/assets.js';
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,7 +25,6 @@ const Sidebar = () => {
       groupLabel: 'Main Menu',
       items: [
         { label: 'Dashboard', path: '/student/dashboard', icon: LayoutDashboard },
-        { label: 'Apply for Scheme', path: '/student/apply', icon: FilePlus },
         { label: 'My Applications', path: '/student/applications', icon: FileText },
         { label: 'My Documents', path: '/student/documents', icon: Folder },
       ],
@@ -48,8 +47,8 @@ const Sidebar = () => {
           onClick={() => navigate('/student/dashboard')} 
           className="p-4 flex items-center gap-3 border-b border-slate-200 bg-slate-50 cursor-pointer"
         >
-          <div className="w-9 h-9 bg-emerald-800 text-white flex items-center justify-center font-bold rounded-xs shrink-0 shadow-2xs">
-            <GraduationCap className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-xs bg-emerald-800 flex items-center justify-center shrink-0">
+            <img src= {logo.icon} />
           </div>
           <div className="min-w-0">
             <h1 className="text-sm font-bold text-slate-900 leading-none tracking-tight">TribalVidya</h1>

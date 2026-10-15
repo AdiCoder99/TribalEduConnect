@@ -105,8 +105,8 @@ const StudentDashboard = () => {
   return (
     <div className="space-y-6 font-sans">
       {/* Official Government Portal Banner */}
-      <div className="bg-slate-900 border-l-4 border-emerald-600 p-5 sm:p-6 text-white rounded-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-2xs">
-        <div className="space-y-1 max-w-2xl">
+      <div  className="bg-slate-900 border-l-4 border-emerald-600 p-5 sm:p-6 text-white rounded-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-2xs">
+        <div  className="space-y-1 max-w-2xl">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono tracking-widest bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-xs uppercase font-bold">
               Beneficiary Portal
