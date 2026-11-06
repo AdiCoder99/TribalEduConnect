@@ -1,0 +1,38 @@
+[
+  {
+    "id": "nfst",
+    "title": "National Fellowship for Higher Education of ST Students",
+    "content": "The National Fellowship for Higher Education of ST Students supports eligible Scheduled Tribe students pursuing M.Phil. and Ph.D. courses in India. The seeded portal demo uses an annual family income limit of Rs 600000. Students should keep their ST certificate, income certificate, academic records, enrolment proof, Aadhaar details, and an Aadhaar-linked bank account ready.",
+    "source": "MoTA scheme guide: NFST"
+  },
+  {
+    "id": "nos",
+    "title": "National Overseas Scholarship",
+    "content": "The National Overseas Scholarship supports selected Scheduled Tribe students pursuing Master's and Ph.D. study abroad. The seeded portal demo uses an annual family income limit of Rs 800000. Applicants should prepare their ST certificate, income certificate, passport or visa documents where applicable, admission or offer letter, academic records, and bank details.",
+    "source": "MoTA scheme guide: NOS"
+  },
+  {
+    "id": "documents",
+    "title": "Required documents",
+    "content": "Common documents include an Aadhaar card, Scheduled Tribe or caste certificate, annual income certificate, proof of enrolment, academic marksheets, and an Aadhaar-linked bank account. Upload clear PDF, JPG, or PNG files. The portal accepts files up to 5 MB for application document uploads. Keep the name and identifying details consistent across documents.",
+    "source": "TribalEduConnect document checklist"
+  },
+  {
+    "id": "process",
+    "title": "Application process",
+    "content": "The application process has four stages: register as a student, complete the profile, choose an eligible scholarship scheme and upload documents, then follow institute or district verification. Applications can be marked for manual review or correction when a document is missing, unclear, or inconsistent. After approval, sanctioned funds are sent through the Aadhaar Payment Bridge to the linked bank account.",
+    "source": "TribalEduConnect application workflow"
+  },
+  {
+    "id": "support",
+    "title": "Support and status",
+    "content": "Students can check application status from the My Applications page. Under Review or Manual Review means an officer is checking the application. Deficient means the student needs to correct or replace information. Approved means the application has passed the portal review. For portal help, use the support link or call the displayed helpline number.",
+    "source": "TribalEduConnect student portal help"
+  },
+  {
+    "id": "eligibility",
+    "title": "Eligibility guidance",
+    "content": "Eligibility depends on the selected scheme rules, Scheduled Tribe status, course level, institution or study location, income limit, and document verification. The chatbot can explain the published demo guidance, but it cannot make a final eligibility decision. Always verify the latest official notification before submitting an application.",
+    "source": "TribalEduConnect eligibility guidance"
+  }
+]

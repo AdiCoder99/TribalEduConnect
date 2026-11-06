@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../Components/Sidebars/SideBar';
 import Navbar from '../Components/Navbars/NavBar';
+import StudentChatbotWidget from '../Components/StudentChatbotWidget';
 
 const DashboardLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,6 +24,7 @@ const DashboardLayout = () => {
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
           <Outlet />
         </main>
+        <StudentChatbotWidget />
       </div>
     </div>
   );

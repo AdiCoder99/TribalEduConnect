@@ -16,6 +16,7 @@ import MyDocuments from './Pages/MyDocuments';
 import OfficerScrutinyQueue from './Pages/OfficerScrutinyQueue';
 import OfficerReports from './Pages/OfficerReports';
 import SuperAdminDashboard from './Pages/Dashboards/SuperAdminDashboard';
+import StudentChatbot from './Pages/StudentChatbot';
 
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
           <Route path="apply" element={<ApplyScheme />} />
           <Route path="applications" element={<MyApplications />} />
           <Route path="documents" element={<MyDocuments />} />
+          <Route path="assistant" element={<StudentChatbot />} />
           {/* Add future routes seamlessly here */}
         </Route>
         <Route

@@ -1,8 +1,6 @@
-import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
-  FilePlus,
   FileText,
   Folder,
   Bell,
@@ -11,7 +9,8 @@ import {
   HelpCircle,
   LogOut,
   ShieldCheck,
-  Building2
+  Building2,
+  Bot
 } from 'lucide-react';
 import { useApp } from '../../Context/AppContext';
 import logo from '../../assets/assets.js';
@@ -34,6 +33,7 @@ const Sidebar = () => {
       items: [
         { label: 'Notifications', path: '/student/notifications', icon: Bell, badge: 3 },
         { label: 'Scholarship Schemes', path: '/student/schemes', icon: GraduationCap },
+        { label: 'Ask the Assistant', path: '/student/assistant', icon: Bot, badge: 'AI' },
       ],
     },
   ];

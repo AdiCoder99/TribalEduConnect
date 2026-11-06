@@ -4,6 +4,7 @@ import { evaluateEligibility } from '../services/ruleEngine.js';
 import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs';
+import { getAiEndpoint } from '../services/aiService.js';
 
 /**
  * 1. SUBMIT NEW APPLICATION
@@ -60,7 +61,7 @@ export const submitApplication = async (req, res) => {
           contentType: req.files.incomeDoc[0].mimetype,
         });
 
-        const ocrResponse = await axios.post('http://localhost:8000/api/ocr/verify-document', formData, {
+        const ocrResponse = await axios.post(getAiEndpoint('/api/ocr/verify-document'), formData, {
           headers: formData.getHeaders()
         });
 
@@ -188,7 +189,7 @@ export const resubmitApplication = async (req, res) => {
         const formData = new FormData();
         formData.append('file', fs.createReadStream(filePath));
 
-        const ocrResponse = await axios.post('http://localhost:8000/api/ocr/verify-document', formData, {
+        const ocrResponse = await axios.post(getAiEndpoint('/api/ocr/verify-document'), formData, {
           headers: formData.getHeaders()
         });
 
