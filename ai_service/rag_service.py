@@ -49,9 +49,20 @@ def retrieve(query: str, limit: int = 3) -> List[Dict[str, str]]:
     return [record for record in ranked[:limit] if _score(query_tokens, record)[0] > 0]
 
 
-def answer_query(query: str) -> Dict[str, object]:
+def answer_query(query: str, history: List[dict] | None = None) -> Dict[str, object]:
     matches = retrieve(query)
     if not matches:
+        if configured():
+            try:
+                return {
+                    "answer": generate_grounded_answer(query, [], history or []),
+                    "sources": [],
+                    "grounded": False,
+                    "model": "llm-conversational",
+                    "llm_error": None,
+                }
+            except RuntimeError:
+                pass
         return {
             "answer": (
                 "I could not find that in the published scholarship guidance. "
@@ -66,7 +77,7 @@ def answer_query(query: str) -> Dict[str, object]:
     llm_error = None
     if configured():
         try:
-            answer = generate_grounded_answer(query, matches)
+            answer = generate_grounded_answer(query, matches, history or [])
             model = "llm-grounded"
         except RuntimeError as error:
             answer = " ".join(record["content"] for record in matches[:2])

@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from typing import List
 from utils.ocr_engine import extract_text_from_image, parse_income_and_caste
 from rag_service import answer_query
 
@@ -32,11 +33,12 @@ def read_root():
 
 class ChatRequest(BaseModel):
     message: str = Field(min_length=2, max_length=500)
+    history: List[dict] = Field(default_factory=list, max_length=12)
 
 
 @app.post("/api/rag/chat")
 async def chat(request: ChatRequest):
-    return {"success": True, **answer_query(request.message)}
+    return {"success": True, **answer_query(request.message, request.history)}
 
 @app.post("/api/ocr/verify-document")
 async def verify_document(file: UploadFile = File(...)):

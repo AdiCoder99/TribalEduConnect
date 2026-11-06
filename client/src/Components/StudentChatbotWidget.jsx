@@ -30,7 +30,10 @@ const StudentChatbotWidget = () => {
       const response = await fetch(`${AI_SERVICE_URL}/api/rag/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({
+          message,
+          history: messages.slice(-8).map(({ role, text }) => ({ role, text })),
+        }),
       });
       const payload = await response.json();
       if (!response.ok || !payload.success) {
