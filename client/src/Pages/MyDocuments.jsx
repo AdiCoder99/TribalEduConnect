@@ -1,29 +1,21 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../Context/AppContext';
 import {
   FileText,
   ShieldCheck,
   UploadCloud,
-  CheckCircle2,
-  AlertCircle,
   Clock,
   Download,
   Eye,
   Trash2,
   RefreshCw,
   ArrowLeft,
-  FileCheck,
   Search,
-  Filter,
-  ExternalLink,
   Lock,
-  X
 } from 'lucide-react';
 
 const MyDocuments = () => {
   const navigate = useNavigate();
-  const { user } = useApp();
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [previewDoc, setPreviewDoc] = useState(null);
@@ -155,6 +147,8 @@ const MyDocuments = () => {
       fileSize: `${(newUpload.file.size / 1024).toFixed(0)} KB`,
       fileType: 'PDF',
       fileName: newUpload.file.name,
+      fileUrl: URL.createObjectURL(newUpload.file),
+      mimeType: newUpload.file.type,
       status: 'Pending Verification',
       statusColor: 'bg-sky-100 text-sky-900 border-sky-300',
       sha256Hash: 'Auto-generating SHA256...',
@@ -169,6 +163,8 @@ const MyDocuments = () => {
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to remove this document from your vault?')) {
+      const documentToDelete = documents.find(doc => doc.id === id);
+      if (documentToDelete?.fileUrl) URL.revokeObjectURL(documentToDelete.fileUrl);
       setDocuments(documents.filter(doc => doc.id !== id));
     }
   };
@@ -335,7 +331,17 @@ const MyDocuments = () => {
                 </button>
 
                 <button
-                  onClick={() => alert(`Downloading ${doc.fileName}...`)}
+                  onClick={() => {
+                    if (!doc.fileUrl) {
+                      setPreviewDoc(doc);
+                      return;
+                    }
+                    const link = document.createElement('a');
+                    link.href = doc.fileUrl;
+                    link.download = doc.fileName;
+                    link.click();
+                  }}
+                  title={doc.fileUrl ? 'Download document' : 'Open document details'}
                   className="flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold border border-slate-300 rounded-xs text-[11px] transition cursor-pointer"
                 >
                   <Download className="w-3 h-3" />
@@ -384,7 +390,24 @@ const MyDocuments = () => {
             </div>
 
             <div className="p-5 space-y-4 text-xs">
-              <div className="border-b border-slate-200 pb-3">
+            {previewDoc.fileUrl && (
+              <div className="overflow-hidden rounded-xs border border-slate-300 bg-slate-100">
+                {previewDoc.mimeType?.startsWith('image/') ? (
+                  <img
+                    src={previewDoc.fileUrl}
+                    alt={previewDoc.title}
+                    className="max-h-72 w-full object-contain"
+                  />
+                ) : (
+                  <iframe
+                    src={previewDoc.fileUrl}
+                    title={`Preview of ${previewDoc.title}`}
+                    className="h-72 w-full"
+                  />
+                )}
+              </div>
+            )}
+            <div className="border-b border-slate-200 pb-3">
                 <span className="text-[9px] font-mono text-slate-500 uppercase font-bold">Document Title</span>
                 <h4 className="text-sm font-bold text-slate-900">{previewDoc.title}</h4>
                 <p className="text-[11px] text-slate-600 mt-0.5 font-mono">Registry Reference: {previewDoc.refNumber}</p>
@@ -414,10 +437,18 @@ const MyDocuments = () => {
 
               <div className="pt-2 border-t border-slate-200 flex justify-end gap-2">
                 <button
-                  onClick={() => alert(`Downloading verified record for ${previewDoc.refNumber}...`)}
+                  onClick={() => {
+                    if (!previewDoc.fileUrl) return;
+                    const link = document.createElement('a');
+                    link.href = previewDoc.fileUrl;
+                    link.download = previewDoc.fileName;
+                    link.click();
+                  }}
+                  disabled={!previewDoc.fileUrl}
+                  title={previewDoc.fileUrl ? 'Download original file' : 'No source file available for this demo record'}
                   className="px-3 py-1.5 bg-emerald-800 hover:bg-emerald-900 text-white font-bold rounded-xs transition text-xs flex items-center gap-1.5"
                 >
-                  <Download className="w-3.5 h-3.5" /> Download Verified Copy
+                  <Download className="w-3.5 h-3.5" /> {previewDoc.fileUrl ? 'Download Original File' : 'Demo Record Only'}
                 </button>
               </div>
 

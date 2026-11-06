@@ -264,6 +264,14 @@ export const reviewApplication = async (req, res) => {
     }
 
     application.status = status;
+    const reviewNote = Array.isArray(deficiencyNotes)
+      ? deficiencyNotes.map((note) => note.reason).filter(Boolean).join(' ')
+      : '';
+    application.reviewHistory.push({
+      status,
+      note: reviewNote,
+      reviewedBy: req.user._id,
+    });
 
     if (deficiencyNotes && Array.isArray(deficiencyNotes)) {
       deficiencyNotes.forEach(note => {

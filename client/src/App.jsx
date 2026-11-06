@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './Components/ProtectedRoute';
 
@@ -14,6 +13,9 @@ import ProfileSetup from './Pages/ProfileSetup';
 import LandingPage from './Pages/LandingPage';
 import MyApplications from './Pages/MyApplications';
 import MyDocuments from './Pages/MyDocuments';
+import OfficerScrutinyQueue from './Pages/OfficerScrutinyQueue';
+import OfficerReports from './Pages/OfficerReports';
+import SuperAdminDashboard from './Pages/Dashboards/SuperAdminDashboard';
 
 
 function App() {
@@ -58,8 +60,11 @@ function App() {
           <OfficerLayout />
         </ProtectedRoute>}>
           <Route path="dashboard" element={<OfficerDashboard />} />
+          <Route path="scrutiny" element={<OfficerScrutinyQueue />} />
+          <Route path="reports" element={<OfficerReports />} />
           {/* Add future routes for officer here */}
         </Route>
+        <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles="SUPER_ADMIN"><SuperAdminDashboard /></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

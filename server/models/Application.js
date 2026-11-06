@@ -13,10 +13,18 @@ const applicationSchema = new mongoose.Schema(
       required: true,
     },
     applicant: {
-      fullName: { type: String, required: true },
-      dob: { type: String, required: true },
+      name: { type: String, required: true },
+      email: { type: String, required: true },
+      phone: String,
+      stCertificateNo: String,
       annualIncome: { type: Number, required: true },
-      category: { type: String, required: true },
+      academicScore: Number,
+      state: String,
+      university: String,
+      course: String,
+      rollNumber: String,
+      bankAccountNo: String,
+      ifscCode: String,
     },
     // AWS S3 Document Links stored here
     documents: {
@@ -35,10 +43,16 @@ const applicationSchema = new mongoose.Schema(
       isScDetected: Boolean,
       confidenceScore: Number,
     },
+    reviewHistory: [{
+      status: { type: String, required: true },
+      note: { type: String, trim: true },
+      reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      reviewedAt: { type: Date, default: Date.now },
+    }],
     status: {
       type: String,
-      enum: ['Submitted', 'Under Review', 'Approved', 'Flagged'],
-      default: 'Submitted',
+      enum: ['SUBMITTED', 'UNDER_REVIEW', 'AUTO_VERIFIED', 'MANUAL_REVIEW', 'DEFICIENT', 'APPROVED', 'REJECTED'],
+      default: 'SUBMITTED',
     },
   },
   { timestamps: true }

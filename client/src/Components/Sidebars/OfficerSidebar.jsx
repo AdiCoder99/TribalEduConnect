@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -10,7 +10,6 @@ import {
   HelpCircle,
   LogOut,
   ShieldCheck,
-  ChevronRight,
   X
 } from 'lucide-react';
 import { useApp } from '../../Context/AppContext';
@@ -22,7 +21,7 @@ const OfficerSidebar = ({ mobileOpen, onClose }) => {
 
   useEffect(() => {
     if (mobileOpen && onClose) onClose();
-  }, [location.pathname]);
+  }, [location.pathname, mobileOpen, onClose]);
 
   const navGroups = [
     {
@@ -38,7 +37,7 @@ const OfficerSidebar = ({ mobileOpen, onClose }) => {
       groupLabel: 'Administration',
       items: [
         { label: 'Institute Directory', path: '/officer/institutes', icon: Building2 },
-        { label: 'Verification Analytics', path: '/officer/analytics', icon: BarChart3 },
+        { label: 'Verification Analytics', path: '/officer/reports', icon: BarChart3 },
       ]
     }
   ];

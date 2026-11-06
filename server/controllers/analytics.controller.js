@@ -23,11 +23,14 @@ export const getDashboardStats = async (req, res) => {
       success: true,
       data: {
         totalApplications,
+        submitted: statusMap['SUBMITTED'] || 0,
+        underReview: statusMap['UNDER_REVIEW'] || 0,
         autoVerified: statusMap['AUTO_VERIFIED'] || 0,
+        manualReview: statusMap['MANUAL_REVIEW'] || 0,
         deficient: statusMap['DEFICIENT'] || 0,
         approved: statusMap['APPROVED'] || 0,
         rejected: statusMap['REJECTED'] || 0,
-        pending: statusMap['PENDING'] || 0,
+        pending: (statusMap['SUBMITTED'] || 0) + (statusMap['UNDER_REVIEW'] || 0) + (statusMap['MANUAL_REVIEW'] || 0) + (statusMap['DEFICIENT'] || 0),
         stateDistribution
       }
     });
