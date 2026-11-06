@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Bot,
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 
 import logo from '../assets/assets.js';
+import DemoCredentials from '../Components/DemoCredentials';
 
 /*
   Design tokens
@@ -164,6 +165,7 @@ const LandingPage = () => {
 
       {/* Utility bar */}
       <div className="tricolor" />
+      <DemoCredentials />
       <div className="text-sm" style={{ background: 'var(--ink)', color: '#D5E0DE' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-1.5 flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
           <span className="font-semibold">Government of India &nbsp;|&nbsp; Ministry of Tribal Affairs</span>

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../../Context/AppContext';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import DemoCredentials from '../../Components/DemoCredentials';
 
 /*
   Same tokens as LandingPage and Register. Once all three pages are in place,
@@ -58,6 +59,10 @@ const roleInfo = {
     heading: 'District officer login',
     text: 'Log in to review student applications and verify documents for your district.',
   },
+  SUPER_ADMIN: {
+    heading: 'Ministry administrator login',
+    text: 'Log in to oversee scholarship operations, schemes, and ministry-wide reporting.',
+  },
 };
 
 const Login = () => {
@@ -70,6 +75,12 @@ const Login = () => {
 
   const update = (key) => (e) => setFormData({ ...formData, [key]: e.target.value });
   const info = roleInfo[formData.role];
+
+  const useDemoCredentials = ({ role, email, password }) => {
+    const roleByLabel = { Student: 'STUDENT', Officer: 'SCRUTINIZER', Admin: 'SUPER_ADMIN' };
+    setFormData({ role: roleByLabel[role], email, password });
+    setError('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,6 +120,7 @@ const Login = () => {
     <div className="tec min-h-screen flex flex-col">
       <style>{styles}</style>
       <div className="tricolor" />
+      <DemoCredentials onUse={useDemoCredentials} />
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12">
         {/* Left: context panel */}
@@ -164,8 +176,8 @@ const Login = () => {
             <form onSubmit={handleSubmit} className="mt-6 space-y-5">
               <fieldset>
                 <legend className="font-semibold mb-1.5">I am a</legend>
-                <div className="seg">
-                  {[['STUDENT', 'Student'], ['SCRUTINIZER', 'Officer / Scrutinizer']].map(([value, label]) => (
+                <div className="seg" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                  {[['STUDENT', 'Student'], ['SCRUTINIZER', 'Officer'], ['SUPER_ADMIN', 'Admin']].map(([value, label]) => (
                     <button
                       key={value}
                       type="button"
